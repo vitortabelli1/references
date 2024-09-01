@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DuPont: Portal Web</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script>
+    function toggleEdit(id) {
+      document.getElementById(`edit-form-${id}`).classList.toggle('hidden');
+    }
+    
+    function handleUpdate(event, id) {
+      event.preventDefault();
+      const form = document.getElementById(`update-form-${id}`);
+      fetch(`/atualizar/${id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(new FormData(form)).toString()
+      })
+      .then(response => response.text())
+      .then(data => {
+        if (data === 'success') {
+          location.reload();
+        } else {
+          alert('Erro ao atualizar.');
+        }
+      });
+    }
+    
+    function handleDelete(id) {
+      if (confirm('Tem certeza de que deseja excluir?')) {
+        fetch(`/excluir/${id}`, { method: 'POST' })
+          .then(response => response.text())
+          .then(data => {
+            if (data === 'success') {
+              location.reload();
+            } else {
+              alert('Erro ao excluir.');
+            }
+          });
+      }
+    }
+  </script>
+  <style>
+    .hidden { display: none; }
+    .edit-form { margin: 10px 0; }
+  </style>
+</head>
+<body>
+  <header>
+    <div>DuPont: Portal Web</div>
+    <nav class="menu">
+      <div class="dropdown">
+        <a href="#">Clientes</a>
+        <div class="dropdown-content">
+          <a href="#">Matérias-primas</a>
+          <a href="#">Relações Receita/SKU/GMID</a>
+          <a href="#">Usuários</a>
+          <a href="#">Ignorar Produtos</a>
+          <a href="#">Tipos Salsichas</a>
+          <a href="#">Relação Salsicha SKU</a>
+          <a href="#">Parâmetros Salsicha</a>
+          <a href="#">Hot Box</a>
+          <a href="#">Tipos Parada</a>
+        </div>
+      </div>
+      <a href="#">Etiquetas</a>
+      <a href="#">Relatórios</a>
+    </nav>
+    <div class="greeting">Olá, <%= usuario %></div>
+  </header>
+  <div class="content">
+    <div class="filters">
+      <h2>Relações Receita/SKU/GMID</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Receita</th>
+            <th>SKU</th>
+            <th>GMID</th>
+            <th>Cliente</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (produtos && produtos.length > 0) { %>
+            <% produtos.forEach(produto => { %>
+              <tr>
+                <td><%= produto.receita %></td>
+                <td><%= produto.sku %></td>
+                <td><%= produto.gmid %></td>
+                <td><%= produto.cliente %></td>
+                <td>
+                  <button onclick="toggleEdit('<%= produto._id %>')">Editar</button>
+                  <button onclick="handleDelete('<%= produto._id %>')">Excluir</button>
+
+                  <div id="edit-form-<%= produto._id %>" class="edit-form hidden">
+                    <form id="update-form-<%= produto._id %>" onsubmit="handleUpdate(event, '<%= produto._id %>')">
+                      <label for="receita-<%= produto._id %>">Receita:</label>
+                      <input type="text" id="receita-<%= produto._id %>" name="receita" value="<%= produto.receita %>" required><br>
+
+                      <label for="sku-<%= produto._id %>">SKU:</label>
+                      <input type="text" id="sku-<%= produto._id %>" name="sku" value="<%= produto.sku %>" required><br>
+
+                      <label for="gmid-<%= produto._id %>">GMID:</label>
+                      <input type="text" id="gmid-<%= produto._id %>" name="gmid" value="<%= produto.gmid %>" required><br>
+
+                      <label for="cliente-<%= produto._id %>">Cliente:</label>
+                      <input type="text" id="cliente-<%= produto._id %>" name="cliente" value="<%= produto.cliente %>" required><br>
+
+                      <button type="submit">Salvar</button>
+                      <button type="button" onclick="toggleEdit('<%= produto._id %>')">Cancelar</button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            <% }) %>
+          <% } else { %>
+            <tr>
+              <td colspan="5">Nenhum dado disponível</td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>

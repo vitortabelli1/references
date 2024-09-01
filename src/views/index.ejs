@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DuPont: Portal Web</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('search-button').addEventListener('click', (event) => {
+        event.preventDefault(); 
+
+        const product = document.getElementById('product').value;
+        const lot = document.getElementById('lot').value;
+        const manufactureDate = document.getElementById('manufacture-date').value;
+        const validationDate = document.getElementById('validation-date').value;
+
+        const query = new URLSearchParams({
+          product,
+          lot,
+          manufactureDate,
+          validationDate
+        }).toString();
+
+        fetch(`/produtos?${query}`)
+          .then(response => response.json())
+          .then(data => {
+            const tableBody = document.getElementById('product-table-body');
+            tableBody.innerHTML = ''; // Limpa a tabela antes de adicionar novos dados
+            data.forEach(produto => {
+              const row = document.createElement('tr');
+              row.innerHTML = `
+                <td>${produto.Produto}</td>
+                <td>${produto.nome}</td>
+                <td>${produto.lote}</td>
+                <td>${produto.dataFabricacao}</td>
+              `;
+              tableBody.appendChild(row);
+            });
+          })
+          .catch(error => console.error('Erro ao carregar os dados:', error));
+      });
+    });
+  </script>
+</head>
+<body>
+  <header>
+    <div>DuPont: Portal Web</div>
+    <nav class="menu">
+      <div class="dropdown">
+        <a href="#">Clientes</a>
+        <div class="dropdown-content">
+          <a href="#">Matérias-primas</a>
+          <a href="#">Relações Receita/SKU/GMID</a>
+          <a href="#">Usuários</a>
+          <a href="#">Ignorar Produtos</a>
+          <a href="#">Tipos Salsichas</a>
+          <a href="#">Relação Salsicha SKU</a>
+          <a href="#">Parâmetros Salsicha</a>
+          <a href="#">Hot Box</a>
+          <a href="#">Tipos Parada</a>
+        </div>
+      </div>
+      <div class="dropdown">
+        <a href="#">Relatórios</a>
+        <div class="dropdown-content">
+          <a href="/analise">Relatório de Análise/transferência/carregamento</a>
+          <a href="#">Relatório de Vendas</a>
+          <a href="#">Relatório de Estoque</a>
+          <a href="#">Relatório Financeiro</a>
+        </div>
+      </div>
+      <a href="#">Etiquetas</a>
+    </nav>
+    <div class="greeting">Olá, <%= usuario %></div>
+  </header>
+  <div class="content">
+    <div class="filters">
+      <h2>Relatório de histórico de produção</h2>
+      <form>
+        <label for="product">Produto:</label>
+        <input type="text" id="product" name="product" placeholder="Produto a ser pesquisado (opcional)">
+        
+        <label for="lot">Lote:</label>
+        <input type="text" id="lot" name="lot" placeholder="Lote a ser pesquisado (opcional)">
+        
+        <label for="manufacture-date">Data de fabricação:</label>
+        <input type="date" id="manufacture-date" name="manufacture-date">
+        
+        <label for="validation-date">Data de validação inicial:</label>
+        <input type="date" id="validation-date" name="validation-date">
+        
+        <button id="search-button" type="submit">Pesquisar</button>
+      </form>
+    </div>
+    <div class="data-table">
+      <h2>Dados dos Produtos</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Produto</th>
+            <th>Nome</th>
+            <th>Lote</th>
+            <th>Data de Fabricação</th>
+          </tr>
+        </thead>
+        <tbody id="product-table-body">
+          <!-- Dados dos produtos serão inseridos aqui -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>

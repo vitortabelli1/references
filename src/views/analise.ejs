@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DuPont: Análise</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header>
+    <div>DuPont: Portal Web</div>
+    <nav class="menu">
+      <div class="dropdown">
+        <a href="#">Clientes</a>
+        <div class="dropdown-content">
+          <a href="#">Matérias-primas</a>
+          <a href="#">Relações Receita/SKU/GMID</a>
+          <a href="#">Usuários</a>
+          <a href="#">Ignorar Produtos</a>
+          <a href="#">Tipos Salsichas</a>
+          <a href="#">Relação Salsicha SKU</a>
+          <a href="#">Parâmetros Salsicha</a>
+          <a href="#">Hot Box</a>
+          <a href="#">Tipos Parada</a>
+        </div>
+      </div>
+      <div class="dropdown">
+        <a href="#">Relatórios</a>
+        <div class="dropdown-content">
+          <a href="/analise">Relatório de Análise/transferência/carregamento</a>
+          <a href="#">Relatório de Vendas</a>
+          <a href="#">Relatório de Estoque</a>
+          <a href="#">Relatório Financeiro</a>
+        </div>
+      </div>
+      <a href="#">Etiquetas</a>
+    </nav>
+    <div class="greeting">Olá, <%= usuario %></div>
+  </header>
+  <div class="content">
+    <div class="filters">
+      <h1>Análise de SKU</h1>
+      <form action="/analise" method="POST">
+        <label for="sku">Digite o SKU:</label>
+        <input type="text" id="sku" name="sku" required>
+        <button type="submit">Verificar</button>
+      </form>
+
+      <% if (mensagem) { %>
+        <p><%= mensagem %></p>
+      <% } %>
+
+      <% if (qrCodeUrl) { %>
+        <div class="qrcode">
+          <img src="<%= qrCodeUrl %>" alt="QR Code">
+        </div>
+      <% } %>
+
+      <% if (skuValidationData.length > 0) { %>
+        <h2>Dados da Tabela SKU Validation 3</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Batch</th>
+              <th>Tambo</th>
+              <th>Data Lab</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% skuValidationData.forEach(item => { %>
+              <tr>
+                <td><%= item.id %></td>
+                <td><%= item.batch %></td>
+                <td><%= item.tambo %></td>
+                <td><%= item.data_lab %></td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      <% } %>
+    </div>
+  </div>
+</body>
+</html>
